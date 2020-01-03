@@ -54,7 +54,7 @@ function preload ()
     this.load.image('coin','assets/coin.png');/////////COINS
     this.load.image('cannonBall','assets/cannonBall.png');/////////BULLET
     this.load.image('blackenemy','assets/blackenemy.png'); /////////////ENEMIES
-    this.load.image('background','assets/background.png'); /////////// BACKGROUND
+    this.load.image('background','assets/background.jpeg'); /////////// BACKGROUND
 }
 
 
