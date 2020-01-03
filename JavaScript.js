@@ -110,7 +110,7 @@ function update ()
     {
         //FIRE WEAPON FROM THE POSITION OF PLAYER
         cannonball=this.physics.add.sprite(player.x,player.y,'cannonBall');
-
+        
         //MOVE WEAPON IN THE DIRECTION OF MOUSE
         this.physics.moveTo(cannonball,input.x,input.y,500);
 
@@ -122,12 +122,15 @@ function update ()
     if (cursors.left.isDown || keyA.isDown)
     {
         player.setVelocityX(-160);
+        player.setRotation(0);
     }
 
     //MOVE PLAYER WITH VELOCITY (160) IN X DIRECTION IF (D) KEY || RIGHT ARROW IS PRESSED 
     else if (cursors.right.isDown || keyD.isDown)
     {
         player.setVelocityX(160);
+        player.setRotation(0);
+
     }
 
     //IDLE STATE WITH (0) VELOCITY
