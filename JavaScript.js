@@ -1,5 +1,5 @@
-var screenWidth = 700;
-var screenHeight = 400;
+var screenWidth = 240    ;
+var screenHeight = 240;
 
 var ScreenPlatformLeft;
 var ScreenPlatformRight;
@@ -52,7 +52,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: false
+            debug: true
         }
     },
     pixelArt: true,
@@ -110,7 +110,7 @@ function playerDead(self) {
 
 
 function playerIdle(self) {
-    player = self.physics.add.sprite(50, 50, 'player');
+    player = self.physics.add.sprite(200, 200, 'player');
     player.body.setOffset(3, 1);
     player.body.width = 11;
     player.body.height = 12;
@@ -124,15 +124,16 @@ function loadingscene(self) {
 
     //enemey & collider
 
-    ScreenPlatformLeft.create(224, 0, 'screenplatleft').setOrigin(0, 0).setScale(1, 1).refreshBody();
-    ScreenPlatformRight.create(0, 0, 'screenplatright').setOrigin(0, 0).setScale(1, 1).refreshBody();
+    ScreenPlatformRight.create(screenWidth-18, 0, 'screenplatleft').setOrigin(0, 0).setScale(1, 1).refreshBody();
+    ScreenPlatformLeft.create(0, 0, 'screenplatright').setOrigin(0, 0).setScale(1, 1).refreshBody();
 
-    player.body.setGravityY(800);
+    player.body.setGravityY(0);
     player.setBounce(0.02);
     player.setCollideWorldBounds(true);
 
     //MestryBox & collider
-    self.physics.add.collider(player, ScreenPlatformLeft, ScreenPlatformRight);
+    self.physics.add.collider(player, ScreenPlatformLeft);
+    self.physics.add.collider(player, ScreenPlatformRight);
 }
 
 function settingGamePlatform(self) {
@@ -191,53 +192,6 @@ function playerAnimations(self, flag) {
 }
 
 
-
-function create() {
-
-    
-    //playerAnimations(this, flagAnimation = true);
-    // playerIdle(this);
-        //MOUSE INPUT
-        input=this.input;
-        mouse=this.input.mousePointer;
-    
-        //KEYBOARD INPUT KEYS (AWSD)
-        keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    
-        //KEYBOARD INPUT KEYS (ARROWS)
-        cursors = this.input.keyboard.createCursorKeys();
-    
-        //BACKGROUND
-        this.add.image( 0 , 0 , 'background').setOrigin(0,0);
-       
-        //GOLDEN COINS
-        coin = this.physics.add.image(300, 250, 'coin');
-    
-        //DANGEROUS BOMB
-        bomb = this.physics.add.image(500, 250, 'bomb');
-       
-        //PLAYER
-        player = this.physics.add.image(384,256,'player');
-        
-        //ENEMIES
-        blackenemy = this.physics.add.staticGroup();
-        blackenemy.create(100,150,'blackenemy');
-        blackenemy.create(300,120,'blackenemy');
-        blackenemy.create(400,350,'blackenemy');
-        blackenemy.create(600,200,'blackenemy');
-    
-        //NUMBER OF KILLS
-        killsText = this.add.text(20, 20, "Kills: 0", {fontSize: '16px', fill: '#fff'});
-        //NUMBER OF COLLECTED COINS 
-        coinsText = this.add.text(120, 20, "Coins: 0", {fontSize: '16px', fill: '#fff'}); 
-        // STATUS OF PLAYER
-        statusText = this.add.text(20, 360, "Status: Alive", {fontSize: '16px', fill: 'red'}); 
-    
-        playerIdle(this);
-        loadingscene(this);
-        settingGamePlatform(this);
-}
 function destroyEnemies(cannonball,blackenemy) 
 {
     blackenemy.disableBody(true,true);
@@ -264,6 +218,51 @@ function OnHitPlayer(player,bomb)
     statusText.setText('Status: '+ playerStatus);
 }
 
+function create() {
+
+    
+    // playerIdle(this);
+        //MOUSE INPUT
+        input=this.input;
+        mouse=this.input.mousePointer;
+    
+        //KEYBOARD INPUT KEYS (AWSD)
+        keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    
+        //KEYBOARD INPUT KEYS (ARROWS)
+        cursors = this.input.keyboard.createCursorKeys();
+    
+        //BACKGROUND
+        this.add.image( 0 , 0 , 'background').setOrigin(0,0);
+       
+        //GOLDEN COINS
+        coin = this.physics.add.image(300, 250, 'coin');
+    
+        //DANGEROUS BOMB
+        bomb = this.physics.add.image(500, 250, 'bomb');
+        
+        //ENEMIES
+        blackenemy = this.physics.add.staticGroup();
+        blackenemy.create(100,150,'blackenemy');
+        blackenemy.create(300,120,'blackenemy');
+        blackenemy.create(400,350,'blackenemy');
+        blackenemy.create(600,200,'blackenemy');
+    
+        //NUMBER OF KILLS
+        killsText = this.add.text(20, 20, "Kills: 0", {fontSize: '16px', fill: '#fff'});
+        //NUMBER OF COLLECTED COINS 
+        coinsText = this.add.text(120, 20, "Coins: 0", {fontSize: '16px', fill: '#fff'}); 
+        // STATUS OF PLAYER
+        statusText = this.add.text(20, 360, "Status: Alive", {fontSize: '16px', fill: 'red'}); 
+    
+        playerIdle(this);
+        loadingscene(this);
+        settingGamePlatform(this);
+        playerAnimations(this, flagAnimation = false);
+
+}
+
 
 
 function update ()
@@ -272,7 +271,7 @@ function update ()
     let angle = Phaser.Math.Angle.Between(player.x,player.y,input.x,input.y);
 
     //PLAYER ROTATION
-    player.setRotation(angle+Math.PI/2);
+    //player.setRotation(angle+Math.PI/2);
 
     if(mouse.isDown)
     {
@@ -280,7 +279,7 @@ function update ()
         cannonball=this.physics.add.sprite(player.x,player.y,'cannonBall');
         
         //MOVE WEAPON IN THE DIRECTION OF MOUSE
-        this.physics.moveTo(cannonball,input.x,input.y,500);
+        this.physics.moveTo(cannonball,input.x,input.y,1024);
 
         //FOR COLLISION BETWEEN WEAPON OF PLAYER AND ENEMIES 
         this.physics.add.overlap(cannonball,blackenemy,destroyEnemies,null,this);
