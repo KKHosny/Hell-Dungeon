@@ -38,6 +38,7 @@ var bomb;
 
 var playerStatus = "Alive";
 var control = false;
+var flag2 = false;
 
 var config = {
     type: Phaser.AUTO,
@@ -193,6 +194,7 @@ function OnHitPlayer(player,bomb)
     player.disableBody(true, true);
     playerStatus = "Dead";
     statusText.setText('Status: '+ playerStatus);
+    flag2 = true;
 }
 
 function OnMouseClick(self)
@@ -200,19 +202,21 @@ function OnMouseClick(self)
     let angle = Phaser.Math.Angle.Between(player.x,player.y,input.x,input.y);
     //player.setRotation(angle+Math.PI/2);
 
-    if(mouse.isDown && control==false)
+    if(mouse.isDown && flag2==false)
     {
-        cannonball=self.physics.add.sprite(player.x,player.y,'cannonBall');
+        if(control==false)
+        {
+            cannonball=self.physics.add.sprite(player.x,player.y,'cannonBall');
+            self.physics.moveTo(cannonball,input.x,input.y,1024);
+            self.physics.add.overlap(cannonball,blackenemy,destroyEnemies,null,self);
+        }
         
-        self.physics.moveTo(cannonball,input.x,input.y,1024);
         control=true;
+    }
 
-        // if(cannonball.x>worldBounds.width || cannonball.y>worldBounds.height ||cannonball.x<0 || cannonball.y<0)
-        // {
-        // control=false;
-        // console.log("worldBounds")
-        // }
-        self.physics.add.overlap(cannonball,blackenemy,destroyEnemies,null,self);
+    else
+    {
+        control = false;
     }
 }
 
@@ -279,10 +283,6 @@ function LoadingAssets(self)
     // blackenemy.create(600,200,'blackenemy');
 }
 
-function checkWorldBounds(self) 
-{
-    worldBounds=self.physics.world.bounds;
-}
 function create() 
 {
     // playerIdle(this);
@@ -295,7 +295,6 @@ function create()
     playerAnimations(this, flagAnimation = false);
     //LoadingAssets(this); 
     LoadingText(this);
-    checkWorldBounds(this);
      
 }
 
