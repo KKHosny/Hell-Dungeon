@@ -206,9 +206,14 @@ function OnMouseClick(self)
     {
         if(control==false)
         {
+            var difference= self.input.y - player.y;
+            if(difference>0 )
+            {
+               console.log("hjh"); 
             cannonball=self.physics.add.sprite(player.x,player.y,'cannonBall');
             self.physics.moveTo(cannonball,input.x,input.y,1024);
             self.physics.add.overlap(cannonball,blackenemy,destroyEnemies,null,self);
+            }
         }
         
         control=true;
@@ -246,8 +251,8 @@ function CheckCollision(self)
 
 function GetMouseInput(self) 
 {
-    input=self.input;
-    mouse=self.input.mousePointer;
+    input = self.input;
+    mouse = self.input.mousePointer;
 }
 
 function GetKeyboardInput(self) 
