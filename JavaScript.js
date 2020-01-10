@@ -20,12 +20,18 @@ let keyS;
 let keyD;
 let keyW;
 
+
+
 var blackenemy;
 var player;
 var cannonball;
 
 var input;
 var mouse;
+var MousePos;
+var PlayerPos;
+var mouseNormlize;
+var playerNormlize;
 
 var coinsText;
 var killsText;
@@ -47,8 +53,8 @@ var config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 00 },
-            debug: false
+            gravity: { y: 000 },
+            debug: true
         }
     },
     renderer: Phaser.AUTO,
@@ -64,13 +70,12 @@ var config = {
 
 var game = new Phaser.Game(config);
 
-function preload ()
-{
-    this.load.image('bomb','assets/bomb.png');
-    this.load.image('coin','assets/coin.png');
-    this.load.image('cannonBall','assets/cannonBall.png');
-    this.load.image('blackenemy','assets/blackenemy.png'); 
-    this.load.image('background','assets/background.jpeg'); 
+function preload() {
+    this.load.image('bomb', 'assets/bomb.png');
+    this.load.image('coin', 'assets/coin.png');
+    this.load.image('cannonBall', 'assets/cannonBall.png');
+    this.load.image('blackenemy', 'assets/blackenemy.png');
+    this.load.image('background', 'assets/background.jpeg');
     this.load.image('screenplatright', 'assests/platform/siderightPlatform.png');
     this.load.image('screenplatleft', 'assests/platform/sideLeftPlatform.png');
     this.load.image('leftPlat', 'assests/platform/LeftPlatform.png');
@@ -88,32 +93,30 @@ function preload ()
     );
 }
 
-function playerDead(self) 
-{
+function playerDead(self) {
     player = self.physics.add.sprite(50, 50, 'dead');
     player.body.setOffset(1, 2);
     player.body.width = 13;
     player.body.height = 14;
 }
 
-function playerIdle(self) 
-{
+function playerIdle(self) {
     player = self.physics.add.sprite(200, 200, 'player');
     player.body.setOffset(3, 1);
     player.body.width = 11;
     player.body.height = 12;
 }
 
-function loadingscene(self) 
-{
+function loadingscene(self) {
     ScreenPlatformLeft = self.physics.add.staticGroup();
     ScreenPlatformRight = self.physics.add.staticGroup();
 
     //enemey & collider
-    ScreenPlatformRight.create(screenWidth-18, 0, 'screenplatleft').setOrigin(0, 0).setScale(1, 1).refreshBody();
+    ScreenPlatformRight.create(screenWidth - 18, 0, 'screenplatleft').setOrigin(0, 0).setScale(1, 1).refreshBody();
     ScreenPlatformLeft.create(0, 0, 'screenplatright').setOrigin(0, 0).setScale(1, 1).refreshBody();
 
-    player.body.setGravityY(0);
+
+    player.body.setGravityY(120);
     player.setBounce(0.02);
     player.setCollideWorldBounds(true);
 
@@ -122,26 +125,23 @@ function loadingscene(self)
     self.physics.add.collider(player, ScreenPlatformRight);
 }
 
-function settingGamePlatform(self) 
-{
+//random work in progress
+function settingGamePlatform(self) {
     platformArray = [leftPlatform, rightPlatform, gamePlatform];
 
-    for (let i = 0; i < 3; i++)
-        {
 
-        if (i == 0){
-        platformArray[i] = self.physics.add.staticGroup();
-        platformArray[i].create(screenWidth / 2, screenHeight / 2, 'rightPlat').setOrigin(0, 0).refreshBody();
-        }
-        if (i == 1)
-        {platformArray[i] = self.physics.add.staticGroup();
-        platformArray[i].create(screenWidth / 2, screenHeight / 2, 'leftPlat').setOrigin(0, 0).refreshBody();
-        }
-        if (i == 2)
-        {platformArray[i] = self.physics.add.staticGroup();
-        platformArray[i].create(screenWidth / 2, screenHeight / 2, 'platform').setOrigin(0, 0).refreshBody();
-        }
-        }
+            platformArray[0] = self.physics.add.staticGroup();
+            platformArray[0].create(190, screenHeight / 2, 'rightPlat').setOrigin(0, 0).setScale(2).refreshBody();
+            self.physics.add.collider(player, platformArray[0]);
+        
+            platformArray[1] = self.physics.add.staticGroup();
+            platformArray[1].create(20, 50, 'leftPlat').setOrigin(0, 0).setScale(2).refreshBody();
+            self.physics.add.collider(player, platformArray[1]);
+
+            platformArray[2] = self.physics.add.staticGroup();
+            platformArray[2].create(screenWidth / 2, screenHeight / 2, 'platform').setOrigin(0, 0).setScale(2).refreshBody();
+            self.physics.add.collider(player, platformArray[2]);
+
 }
 
 function playerAnimations(self, flag) {
@@ -173,108 +173,105 @@ function playerAnimations(self, flag) {
     player.anims.play('dead1', true);
 }
 
-function destroyEnemies(cannonball,blackenemy) 
-{
-    blackenemy.disableBody(true,true);
-    cannonball.disableBody(true,true);
+function destroyEnemies(cannonball, blackenemy) {
+    blackenemy.disableBody(true, true);
+    cannonball.disableBody(true, true);
     kills += 1;
     killsText.setText('kills: ' + kills);
-    control=false;
+    control = false;
 }
 
-function collectgold(cannon,coin)
-{
+function collectgold(cannon, coin) {
     coin.disableBody(true, true);
     coins += 10;
     coinsText.setText('Coins: ' + coins);
 }
 
-function OnHitPlayer(player,bomb)
-{
+function OnHitPlayer(player, bomb) {
     player.disableBody(true, true);
     playerStatus = "Dead";
-    statusText.setText('Status: '+ playerStatus);
+    statusText.setText('Status: ' + playerStatus);
     flag2 = true;
 }
 
-function OnMouseClick(self)
-{
-    let angle = Phaser.Math.Angle.Between(player.x,player.y,input.x,input.y);
-    //player.setRotation(angle+Math.PI/2);
+function GunMechanics(self) {
 
-    if(mouse.isDown && flag2==false)
-    {
-        if(control==false)
-        {
-            cannonball=self.physics.add.sprite(player.x,player.y,'cannonBall');
-            self.physics.moveTo(cannonball,input.x,input.y,1024);
-            self.physics.add.overlap(cannonball,blackenemy,destroyEnemies,null,self);
+    PlayerPos = new Phaser.Math.Vector2();
+    MousePos = new Phaser.Math.Vector2();
+    PlayerPos.set(player.x, player.y);
+    MousePos.set(game.input.mousePointer.x, game.input.mousePointer.y);
+    temp=new Phaser.Math.Vector2();
+    temp.set(MousePos.x-PlayerPos.x,MousePos.y-PlayerPos.y);
+    var jumb= temp.normalize();
+    player.setVelocityX(-1*jumb.x*50);
+    player.setVelocityY(-1*jumb.y*50); 
+}
+
+function OnMouseClick(self) {
+    let angle = Phaser.Math.Angle.Between(player.x, player.y, input.x, input.y);
+    //player.setRotation(angle+Math.PI/2);
+    // GunMechanics(self);
+
+    if (mouse.isDown && flag2 == false) {
+        if (control == false) {
+            cannonball = self.physics.add.sprite(player.x, player.y, 'cannonBall');
+            self.physics.moveTo(cannonball, input.x, input.y, 1024);
+            self.physics.add.overlap(cannonball, blackenemy, destroyEnemies, null, self);
+            GunMechanics(this);
         }
-        
-        control=true;
+
+        control = true;
     }
 
-    else
-    {
+    else {
         control = false;
     }
 }
 
-function OnKeyboardPress(self)
-{
-     if (cursors.left.isDown || keyA.isDown)
-     {
-         player.setVelocityX(-160);
-     }
- 
-     else if (cursors.right.isDown || keyD.isDown)
-     {
-         player.setVelocityX(160);
-     }
- 
-     else
-     {
-         player.setVelocityX(0);
-     }
+function OnKeyboardPress(self) {
+    if (cursors.left.isDown || keyA.isDown) {
+        player.setVelocityX(-10);
+    }
+
+    if (cursors.right.isDown || keyD.isDown) {
+        player.setVelocityX(10);
+    }
+
+       // player.setVelocityX(0);
 }
 
-function CheckCollision(self) 
-{
-    self.physics.add.overlap(player,coin,collectgold,null,self);
-    self.physics.add.overlap(player,bomb,OnHitPlayer,null,self);
+function CheckCollision(self) {
+    self.physics.add.overlap(player, coin, collectgold, null, self);
+    self.physics.add.overlap(player, bomb, OnHitPlayer, null, self);
 }
 
-function GetMouseInput(self) 
-{
-    input=self.input;
-    mouse=self.input.mousePointer;
+function GetMouseInput(self) {
+    input = self.input;
+    mouse = self.input.mousePointer;
 }
 
-function GetKeyboardInput(self) 
-{
+function GetKeyboardInput(self) {
     keyA = self.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     keyD = self.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     cursors = self.input.keyboard.createCursorKeys();
 }
 
-function LoadingText(self) 
-{
-    killsText = self.add.text(20, 20, "Kills: 0", {fontSize: '16px', fill: '#fff'});
-    coinsText = self.add.text(120, 20, "Coins: 0", {fontSize: '16px', fill: '#fff'}); 
-    statusText = self.add.text(20, 360, "Status: Alive", {fontSize: '16px', fill: 'red'}); 
+function LoadingText(self) {
+    killsText = self.add.text(20, 20, "Kills: 0", { fontSize: '16px', fill: '#fff' });
+    coinsText = self.add.text(120, 20, "Coins: 0", { fontSize: '16px', fill: '#fff' });
+    statusText = self.add.text(20, 360, "Status: Alive", { fontSize: '16px', fill: 'red' });
 }
 
-function LoadingAssets(self) 
-{
+function LoadingAssets(self) {
     //BACKGROUND
     //self.add.image( 0 , 0 , 'background').setOrigin(0,0);
-       
+
     //GOLDEN COINS
-   // coin = self.physics.add.image(300, 250, 'coin');
+    // coin = self.physics.add.image(300, 250, 'coin');
 
     //DANGEROUS BOMB
     bomb = self.physics.add.image(100, 200, 'bomb');
-    
+
     //ENEMIES
     // blackenemy = self.physics.add.staticGroup();
     // blackenemy.create(100,150,'blackenemy');
@@ -283,25 +280,26 @@ function LoadingAssets(self)
     // blackenemy.create(600,200,'blackenemy');
 }
 
-function create() 
-{
+function create() {
     // playerIdle(this);
-    GetMouseInput(this); 
+    GetMouseInput(this);
     GetKeyboardInput(this);
     LoadingAssets(this);
     playerIdle(this);
-    loadingscene(this);
     settingGamePlatform(this);
-    playerAnimations(this, flagAnimation = false);
-    //LoadingAssets(this); 
+    loadingscene(this);
+    //playerAnimations(this, flagAnimation = false);
+    //LoadingAssets(this);
     LoadingText(this);
-     
+
+
 }
 
-function update ()
-{
+function update() {
     OnMouseClick(this);
     OnKeyboardPress(this);
     CheckCollision(this);
+    
+
 }
 
