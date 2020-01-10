@@ -207,6 +207,7 @@ function GunMechanics(self) {
     player.setVelocityY(-1*jumb.y*50); 
 }
 
+<<<<<<< HEAD
 function OnMouseClick(self) {
     let angle = Phaser.Math.Angle.Between(player.x, player.y, input.x, input.y);
     //player.setRotation(angle+Math.PI/2);
@@ -218,6 +219,20 @@ function OnMouseClick(self) {
             self.physics.moveTo(cannonball, input.x, input.y, 1024);
             self.physics.add.overlap(cannonball, blackenemy, destroyEnemies, null, self);
             GunMechanics(this);
+=======
+    if(mouse.isDown && flag2==false)
+    {
+        if(control==false)
+        {
+            var difference= self.input.y - player.y;
+            if(difference>0 )
+            {
+               console.log("hjh"); 
+            cannonball=self.physics.add.sprite(player.x,player.y,'cannonBall');
+            self.physics.moveTo(cannonball,input.x,input.y,1024);
+            self.physics.add.overlap(cannonball,blackenemy,destroyEnemies,null,self);
+            }
+>>>>>>> origin/master
         }
 
         control = true;
@@ -245,7 +260,12 @@ function CheckCollision(self) {
     self.physics.add.overlap(player, bomb, OnHitPlayer, null, self);
 }
 
+<<<<<<< HEAD
 function GetMouseInput(self) {
+=======
+function GetMouseInput(self) 
+{
+>>>>>>> origin/master
     input = self.input;
     mouse = self.input.mousePointer;
 }
